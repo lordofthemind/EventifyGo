@@ -16,7 +16,7 @@ type inMemorySuperUserRepository struct {
 }
 
 // NewInMemorySuperUserRepository initializes an in-memory repository
-func NewInMemorySuperUserRepository() SuperUserRepository {
+func NewInMemorySuperUserRepository() SuperUserRepositoryInterface {
 	return &inMemorySuperUserRepository{
 		superUsers: make(map[uuid.UUID]*types.SuperUserType),
 	}

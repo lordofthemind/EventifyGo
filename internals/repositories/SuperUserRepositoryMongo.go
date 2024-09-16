@@ -16,7 +16,7 @@ type mongoSuperUserRepository struct {
 	collection *mongo.Collection
 }
 
-func NewMongoSuperUserRepository(db *mongo.Database) SuperUserRepository {
+func NewMongoSuperUserRepository(db *mongo.Database) SuperUserRepositoryInterface {
 	return &mongoSuperUserRepository{
 		collection: db.Collection("superusers"),
 	}

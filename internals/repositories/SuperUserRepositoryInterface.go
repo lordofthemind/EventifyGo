@@ -7,7 +7,7 @@ import (
 	"github.com/lordofthemind/EventifyGo/internals/types"
 )
 
-type SuperUserRepository interface {
+type SuperUserRepositoryInterface interface {
 	// General CRUD methods
 	Create(ctx context.Context, superUser *types.SuperUserType) error
 	FindByID(ctx context.Context, id uuid.UUID) (*types.SuperUserType, error)

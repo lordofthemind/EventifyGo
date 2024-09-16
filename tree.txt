@@ -8,14 +8,25 @@
 ├── configs
 ├── docker
 ├── docs
+├── examples
+│   ├── InMemoryRepository.txt
+│   └── mongoDbRepository.txt
 ├── go.mod
+├── go.sum
 ├── internals
 │   ├── handlers
+│   │   ├── SuperUserFiberHandler.go
+│   │   └── SuperUserGinHandler.go
 │   ├── initializers
 │   ├── repositories
+│   │   ├── SuperUserRepositoryInMemory.go
+│   │   ├── SuperUserRepositoryInterface.go
+│   │   ├── SuperUserRepositoryMongo.go
+│   │   └── SuperUserRepositoryPostgres.go
 │   ├── responses
 │   ├── routes
 │   ├── services
+│   │   └── SuperUserService.go
 │   ├── types
 │   │   └── SuperUserType.go
 │   └── utils
@@ -29,4 +40,4 @@
 ├── ssl
 └── tree.txt
 
-22 directories, 8 files
+23 directories, 18 files
