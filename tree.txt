@@ -19,12 +19,14 @@
 │   │   └── SuperUserGinHandler.go
 │   ├── initializers
 │   ├── repositories
-│   │   ├── SuperUserRepositoryInMemory.go
-│   │   ├── SuperUserRepositoryInterface.go
-│   │   ├── SuperUserRepositoryMongo.go
-│   │   └── SuperUserRepositoryPostgres.go
+│   │   ├── SuperUserInMemoryRepository.go
+│   │   ├── SuperUserMongoRepository.go
+│   │   ├── SuperUserPostgresRepository.go
+│   │   └── SuperUserRepositoryInterface.go
 │   ├── responses
 │   ├── routes
+│   │   ├── SuperUserFiberRoutes.go
+│   │   └── SuperUserGinRoutes.go
 │   ├── services
 │   │   └── SuperUserService.go
 │   ├── types
@@ -40,4 +42,4 @@
 ├── ssl
 └── tree.txt
 
-23 directories, 18 files
+23 directories, 20 files
