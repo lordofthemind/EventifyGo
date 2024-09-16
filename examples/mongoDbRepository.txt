@@ -1,0 +1,123 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"your_project/internals/types"
+	"your_project/repositories/mongo"
+)
+
+func main() {
+	// Setup MongoDB client
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Connect to MongoDB
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Disconnect(ctx)
+
+	// Use the database and collection
+	db := client.Database("your_database")
+
+	// Initialize the repository
+	superUserRepo := mongo.NewMongoSuperUserRepository(db)
+
+	// Example usage
+	runExamples(ctx, superUserRepo)
+}
+
+func runExamples(ctx context.Context, superUserRepo repositories.SuperUserRepository) {
+	// 1. Create a new super user
+	newSuperUser := &types.SuperUserType{
+		Role:             "admin",
+		Email:            "john.doe@example.com",
+		FullName:         "John Doe",
+		Username:         "johndoe",
+		HashedPassword:   "hashedpassword123",
+		Is2FAEnabled:     true,
+		PermissionGroups: []string{"group1", "group2"},
+	}
+
+	err := superUserRepo.Create(ctx, newSuperUser)
+	if err != nil {
+		fmt.Println("Error creating super user:", err)
+	} else {
+		fmt.Println("Super user created:", newSuperUser.ID)
+	}
+
+	// 2. Find a super user by ID
+	foundSuperUser, err := superUserRepo.FindByID(ctx, newSuperUser.ID)
+	if err != nil {
+		fmt.Println("Error finding super user by ID:", err)
+	} else {
+		fmt.Printf("Found super user by ID: %+v\n", foundSuperUser)
+	}
+
+	// 3. Find a super user by email
+	foundByEmail, err := superUserRepo.FindByEmail(ctx, "john.doe@example.com")
+	if err != nil {
+		fmt.Println("Error finding super user by email:", err)
+	} else {
+		fmt.Printf("Found super user by email: %+v\n", foundByEmail)
+	}
+
+	// 4. Update a super user (changing the full name)
+	foundSuperUser.FullName = "Johnathan Doe"
+	err = superUserRepo.Update(ctx, foundSuperUser)
+	if err != nil {
+		fmt.Println("Error updating super user:", err)
+	} else {
+		fmt.Println("Super user updated successfully")
+	}
+
+	// 5. Update specific field (username)
+	err = superUserRepo.UpdateField(ctx, newSuperUser.ID, "username", "johnupdated")
+	if err != nil {
+		fmt.Println("Error updating username:", err)
+	} else {
+		fmt.Println("Username updated successfully")
+	}
+
+	// 6. Delete super user by ID
+	err = superUserRepo.DeleteByID(ctx, newSuperUser.ID)
+	if err != nil {
+		fmt.Println("Error deleting super user:", err)
+	} else {
+		fmt.Println("Super user deleted successfully")
+	}
+
+	// 7. Search super users with pagination
+	superUsers, err := superUserRepo.SearchSuperusers(ctx, "john", 1, 10, "full_name")
+	if err != nil {
+		fmt.Println("Error searching super users:", err)
+	} else {
+		fmt.Printf("Found %d super users matching 'john':\n", len(superUsers))
+		for _, user := range superUsers {
+			fmt.Printf("  - %+v\n", user)
+		}
+	}
+
+	// 8. Find all 2FA-enabled super users
+	superUsers2FA, err := superUserRepo.FindAll2FAEnabledSuperusers(ctx)
+	if err != nil {
+		fmt.Println("Error finding 2FA-enabled super users:", err)
+	} else {
+		fmt.Printf("Found %d 2FA-enabled super users:\n", len(superUsers2FA))
+		for _, user := range superUsers2FA {
+			fmt.Printf("  - %+v\n", user)
+		}
+	}
+}

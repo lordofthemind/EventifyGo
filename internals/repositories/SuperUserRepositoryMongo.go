@@ -16,14 +16,13 @@ type mongoSuperUserRepository struct {
 	collection *mongo.Collection
 }
 
-// NewMongoSuperUserRepository initializes a new MongoDB repository
 func NewMongoSuperUserRepository(db *mongo.Database) SuperUserRepository {
 	return &mongoSuperUserRepository{
 		collection: db.Collection("superusers"),
 	}
 }
 
-// Create creates a new super user in the database
+// Create inserts a new super user into the MongoDB collection
 func (r *mongoSuperUserRepository) Create(ctx context.Context, superUser *types.SuperUserType) error {
 	superUser.ID = uuid.New()
 	superUser.CreatedAt = time.Now()
@@ -33,11 +32,10 @@ func (r *mongoSuperUserRepository) Create(ctx context.Context, superUser *types.
 	return err
 }
 
-// FindByID finds a super user by their ID
+// FindByID finds a super user by UUID
 func (r *mongoSuperUserRepository) FindByID(ctx context.Context, id uuid.UUID) (*types.SuperUserType, error) {
 	var superUser types.SuperUserType
 	filter := bson.M{"_id": id}
-
 	err := r.collection.FindOne(ctx, filter).Decode(&superUser)
 	if err == mongo.ErrNoDocuments {
 		return nil, errors.New("superuser not found")
@@ -45,11 +43,10 @@ func (r *mongoSuperUserRepository) FindByID(ctx context.Context, id uuid.UUID) (
 	return &superUser, err
 }
 
-// FindByEmail finds a super user by their email address
+// FindByEmail finds a super user by email
 func (r *mongoSuperUserRepository) FindByEmail(ctx context.Context, email string) (*types.SuperUserType, error) {
 	var superUser types.SuperUserType
 	filter := bson.M{"email": email}
-
 	err := r.collection.FindOne(ctx, filter).Decode(&superUser)
 	if err == mongo.ErrNoDocuments {
 		return nil, errors.New("superuser not found")
@@ -57,11 +54,10 @@ func (r *mongoSuperUserRepository) FindByEmail(ctx context.Context, email string
 	return &superUser, err
 }
 
-// FindByUsername finds a super user by their username
+// FindByUsername finds a super user by username
 func (r *mongoSuperUserRepository) FindByUsername(ctx context.Context, username string) (*types.SuperUserType, error) {
 	var superUser types.SuperUserType
 	filter := bson.M{"username": username}
-
 	err := r.collection.FindOne(ctx, filter).Decode(&superUser)
 	if err == mongo.ErrNoDocuments {
 		return nil, errors.New("superuser not found")
@@ -69,11 +65,10 @@ func (r *mongoSuperUserRepository) FindByUsername(ctx context.Context, username 
 	return &superUser, err
 }
 
-// FindByResetToken finds a super user by their reset token
+// FindByResetToken finds a super user by reset token
 func (r *mongoSuperUserRepository) FindByResetToken(ctx context.Context, token string) (*types.SuperUserType, error) {
 	var superUser types.SuperUserType
 	filter := bson.M{"reset_token": token}
-
 	err := r.collection.FindOne(ctx, filter).Decode(&superUser)
 	if err == mongo.ErrNoDocuments {
 		return nil, errors.New("superuser not found")
@@ -81,44 +76,51 @@ func (r *mongoSuperUserRepository) FindByResetToken(ctx context.Context, token s
 	return &superUser, err
 }
 
-// DeleteByID deletes a super user by their ID
+// DeleteByID deletes a super user by UUID
 func (r *mongoSuperUserRepository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	filter := bson.M{"_id": id}
 	_, err := r.collection.DeleteOne(ctx, filter)
 	return err
 }
 
-// SearchSuperusers searches for super users based on a search query
+// SearchSuperusers searches for super users based on a query string, with pagination and sorting
 func (r *mongoSuperUserRepository) SearchSuperusers(ctx context.Context, searchQuery string, page, limit int, sortBy string) ([]*types.SuperUserType, error) {
 	var superUsers []*types.SuperUserType
-	skip := (page - 1) * limit
-
 	filter := bson.M{
 		"$or": []bson.M{
 			{"full_name": bson.M{"$regex": searchQuery, "$options": "i"}},
-			{"email": bson.M{"$regex": searchQuery, "$options": "i"}},
 			{"username": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"email": bson.M{"$regex": searchQuery, "$options": "i"}},
 		},
 	}
 
-	opts := options.Find().
-		SetSkip(int64(skip)).
+	findOptions := options.Find().
+		SetSkip(int64((page - 1) * limit)).
 		SetLimit(int64(limit)).
-		SetSort(bson.D{{Key: sortBy, Value: 1}})
+		SetSort(bson.M{sortBy: 1}) // 1 for ascending, -1 for descending
 
-	cursor, err := r.collection.Find(ctx, filter, opts)
+	cursor, err := r.collection.Find(ctx, filter, findOptions)
 	if err != nil {
 		return nil, err
 	}
+	defer cursor.Close(ctx)
 
-	if err := cursor.All(ctx, &superUsers); err != nil {
+	for cursor.Next(ctx) {
+		var superUser types.SuperUserType
+		if err := cursor.Decode(&superUser); err != nil {
+			return nil, err
+		}
+		superUsers = append(superUsers, &superUser)
+	}
+
+	if err := cursor.Err(); err != nil {
 		return nil, err
 	}
 
 	return superUsers, nil
 }
 
-// Update updates a super user
+// Update updates an entire super user document
 func (r *mongoSuperUserRepository) Update(ctx context.Context, superUser *types.SuperUserType) error {
 	superUser.UpdatedAt = time.Now()
 
@@ -128,7 +130,7 @@ func (r *mongoSuperUserRepository) Update(ctx context.Context, superUser *types.
 	return err
 }
 
-// UpdateField updates a specific field for a super user
+// UpdateField allows updating a single field of a super user document
 func (r *mongoSuperUserRepository) UpdateField(ctx context.Context, id uuid.UUID, field string, value interface{}) error {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{field: value}}
@@ -136,21 +138,20 @@ func (r *mongoSuperUserRepository) UpdateField(ctx context.Context, id uuid.UUID
 	return err
 }
 
-// GetRoleByID returns the role of a super user by their ID
+// GetRoleByID retrieves the role of a super user by their UUID
 func (r *mongoSuperUserRepository) GetRoleByID(ctx context.Context, id uuid.UUID) (string, error) {
 	var result struct {
 		Role string `bson:"role"`
 	}
 	filter := bson.M{"_id": id}
-
 	err := r.collection.FindOne(ctx, filter).Decode(&result)
 	if err == mongo.ErrNoDocuments {
-		return "", errors.New("role not found")
+		return "", errors.New("superuser not found")
 	}
 	return result.Role, err
 }
 
-// FindAll2FAEnabledSuperusers finds all super users with 2FA enabled
+// FindAll2FAEnabledSuperusers retrieves all super users with 2FA enabled
 func (r *mongoSuperUserRepository) FindAll2FAEnabledSuperusers(ctx context.Context) ([]*types.SuperUserType, error) {
 	var superUsers []*types.SuperUserType
 	filter := bson.M{"is_2fa_enabled": true}
@@ -159,8 +160,17 @@ func (r *mongoSuperUserRepository) FindAll2FAEnabledSuperusers(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	defer cursor.Close(ctx)
 
-	if err := cursor.All(ctx, &superUsers); err != nil {
+	for cursor.Next(ctx) {
+		var superUser types.SuperUserType
+		if err := cursor.Decode(&superUser); err != nil {
+			return nil, err
+		}
+		superUsers = append(superUsers, &superUser)
+	}
+
+	if err := cursor.Err(); err != nil {
 		return nil, err
 	}
 

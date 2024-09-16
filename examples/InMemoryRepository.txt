@@ -1,0 +1,40 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"your_project/internals/types"
+	"your_project/memory"
+)
+
+func main() {
+	// Initialize the in-memory repository
+	superUserRepo := memory.NewInMemorySuperUserRepository()
+
+	// Create a new super user
+	superUser := &types.SuperUserType{
+		Role:     "admin",
+		Email:    "admin@example.com",
+		FullName: "Admin User",
+		Username: "adminuser",
+		HashedPassword: "hashed_password_here",
+		Is2FAEnabled: true,
+		PermissionGroups: []string{"admin_group"},
+	}
+
+	ctx := context.Background()
+	err := superUserRepo.Create(ctx, superUser)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Find the user by ID
+	foundUser, err := superUserRepo.FindByID(ctx, superUser.ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("SuperUser found: %v\n", foundUser)
+}
