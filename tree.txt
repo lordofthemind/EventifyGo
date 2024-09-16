@@ -1,0 +1,32 @@
+.
+├── Changelog.md
+├── Makefile
+├── Readme.md
+├── bin
+├── cmd
+├── config.yaml
+├── configs
+├── docker
+├── docs
+├── go.mod
+├── internals
+│   ├── handlers
+│   ├── initializers
+│   ├── repositories
+│   ├── responses
+│   ├── routes
+│   ├── services
+│   ├── types
+│   │   └── SuperUserType.go
+│   └── utils
+├── logs
+├── main.go
+├── pkgs
+│   ├── helpers
+│   ├── middlewares
+│   └── tokens
+├── scripts
+├── ssl
+└── tree.txt
+
+22 directories, 8 files
