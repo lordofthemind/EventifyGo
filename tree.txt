@@ -6,8 +6,7 @@
 ├── cmd
 │   ├── DataSeeder.go
 │   ├── FiberServer.go
-│   ├── GinServer.go
-│   └── RevelServer.go
+│   └── GinServer.go
 ├── config.yaml
 ├── configs
 │   ├── MainConfigs.go
@@ -22,8 +21,7 @@
 ├── internals
 │   ├── handlers
 │   │   ├── SuperUserFiberHandler.go
-│   │   ├── SuperUserGinHandler.go
-│   │   └── SuperUserRevelHandler.go
+│   │   └── SuperUserGinHandler.go
 │   ├── initializers
 │   │   └── DatabaseInitializer.go
 │   ├── repositories
@@ -41,8 +39,7 @@
 │   ├── responses
 │   ├── routes
 │   │   ├── SuperUserFiberRoutes.go
-│   │   ├── SuperUserGinRoutes.go
-│   │   └── SuperUserRevelRoutes.go
+│   │   └── SuperUserGinRoutes.go
 │   ├── services
 │   │   ├── SuperUserService.go
 │   │   └── SuperUserServiceInterface.go
@@ -50,14 +47,6 @@
 │   │   ├── EventType.go
 │   │   └── SuperUserType.go
 │   └── utils
-├── logs
-│   ├── 20240920_100720_ginServer.log
-│   ├── 20240920_102838_ginServer.log
-│   ├── 20240920_102948_ginServer.log
-│   ├── 20240920_103037_ginServer.log
-│   ├── 20240920_103622_ginServer.log
-│   ├── 20240920_104606_fiberServer.log
-│   └── 20240920_104649_fiberServer.log
 ├── main.go
 ├── pkgs
 │   ├── helpers
@@ -67,4 +56,4 @@
 ├── ssl
 └── tree.txt
 
-26 directories, 42 files
+25 directories, 32 files
