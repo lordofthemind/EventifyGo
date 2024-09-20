@@ -20,6 +20,8 @@
 ├── go.sum
 ├── internals
 │   ├── handlers
+│   │   ├── AuthFiberHandler.go
+│   │   ├── AuthGinHandler.go
 │   │   ├── SuperUserFiberHandler.go
 │   │   └── SuperUserGinHandler.go
 │   ├── initializers
@@ -37,6 +39,7 @@
 │   │       ├── EventPostgresRepository.go
 │   │       └── SuperUserPostgresRepository.go
 │   ├── responses
+│   │   └── StandardResponse.go
 │   ├── routes
 │   │   ├── SuperUserFiberRoutes.go
 │   │   └── SuperUserGinRoutes.go
@@ -51,9 +54,14 @@
 ├── pkgs
 │   ├── helpers
 │   ├── middlewares
+│   │   ├── JWTMiddleware.go
+│   │   └── RequestIDMiddlware.go
 │   └── tokens
 ├── scripts
 ├── ssl
+├── tmp
+│   ├── build-errors.log
+│   └── main
 └── tree.txt
 
-25 directories, 32 files
+26 directories, 39 files
