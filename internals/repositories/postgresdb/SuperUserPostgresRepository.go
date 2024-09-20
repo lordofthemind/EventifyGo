@@ -2,6 +2,7 @@ package postgresdb
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -143,4 +144,19 @@ func (r *postgresSuperUserRepository) FindAll2FAEnabledSuperusers(ctx context.Co
 		return nil, err
 	}
 	return superUsers, nil
+}
+
+// GetAllSuperUsers retrieves all super users from the PostgreSQL database
+func (r *postgresSuperUserRepository) GetAllSuperUsers(ctx context.Context) ([]*types.SuperUserType, error) {
+	var allSuperUsers []*types.SuperUserType
+
+	if err := r.db.WithContext(ctx).Find(&allSuperUsers).Error; err != nil {
+		return nil, err
+	}
+
+	if len(allSuperUsers) == 0 {
+		return nil, errors.New("no super users found")
+	}
+
+	return allSuperUsers, nil
 }

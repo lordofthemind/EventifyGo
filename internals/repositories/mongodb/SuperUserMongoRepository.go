@@ -178,6 +178,26 @@ func (r *mongoSuperUserRepository) FindAll2FAEnabledSuperusers(ctx context.Conte
 	return superUsers, nil
 }
 
+// GetAllSuperUsers retrieves all super users from the MongoDB collection
+func (r *mongoSuperUserRepository) GetAllSuperUsers(ctx context.Context) ([]*types.SuperUserType, error) {
+	cursor, err := r.collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var allSuperUsers []*types.SuperUserType
+	if err = cursor.All(ctx, &allSuperUsers); err != nil {
+		return nil, err
+	}
+
+	if len(allSuperUsers) == 0 {
+		return nil, errors.New("no super users found")
+	}
+
+	return allSuperUsers, nil
+}
+
 // UpdateResetToken updates the reset token for a super user
 func (r *mongoSuperUserRepository) UpdateResetToken(ctx context.Context, id uuid.UUID, token string) error {
 	filter := bson.M{"_id": id}

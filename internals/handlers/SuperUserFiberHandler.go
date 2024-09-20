@@ -33,6 +33,28 @@ func (h *SuperUserFiberHandler) CreateSuperUserHandler(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(createdSuperUser)
 }
 
+// GetAllSuperUsersHandler retrieves all SuperUsers and returns them in a Fiber response
+func (h *SuperUserFiberHandler) GetAllSuperUsersHandler(c *fiber.Ctx) error {
+	superUsers, err := h.service.GetAllSuperUsers(context.Background())
+	if err != nil {
+		// Return 500 status for internal server error
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":  "Failed to retrieve SuperUsers",
+			"detail": err.Error(),
+		})
+	}
+
+	// If no SuperUsers found, return 404 status
+	if len(superUsers) == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "No SuperUsers found",
+		})
+	}
+
+	// Return 200 status with the list of SuperUsers
+	return c.Status(fiber.StatusOK).JSON(superUsers)
+}
+
 // Get SuperUser by ID
 func (h *SuperUserFiberHandler) GetSuperUserByIDHandler(c *fiber.Ctx) error {
 	idParam := c.Params("id")

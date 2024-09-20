@@ -203,6 +203,22 @@ func (s *SuperUserService) SearchSuperUsers(ctx context.Context, searchQuery str
 	return superUsers, nil
 }
 
+// GetAllSuperUsers retrieves all SuperUsers from the repository
+func (s *SuperUserService) GetAllSuperUsers(ctx context.Context) ([]*types.SuperUserType, error) {
+	// Call the repository to get all SuperUsers
+	superUsers, err := s.repo.GetAllSuperUsers(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve all superusers: %w", err)
+	}
+
+	// If no super users are found, return an error
+	if len(superUsers) == 0 {
+		return nil, errors.New("no superusers found")
+	}
+
+	return superUsers, nil
+}
+
 // Helper function to validate super user input
 func validateSuperUser(superUser *types.SuperUserType) error {
 	// Add your validation logic here (e.g., check for required fields)

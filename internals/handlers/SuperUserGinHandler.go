@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/lordofthemind/EventifyGo/internals/responses" // Import the responses package
 	"github.com/lordofthemind/EventifyGo/internals/services"
 	"github.com/lordofthemind/EventifyGo/internals/types"
 )
@@ -22,35 +23,69 @@ func NewSuperUserGinHandler(service services.SuperUserServiceInterface) *SuperUs
 func (h *SuperUserGinHandler) CreateSuperUserHandler(c *gin.Context) {
 	var superUser types.SuperUserType
 	if err := c.ShouldBindJSON(&superUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		// Use standardized response for invalid input
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid input", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	createdSuperUser, err := h.service.CreateSuperUser(c.Request.Context(), &superUser)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// Use standardized response for internal server errors
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to create SuperUser", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdSuperUser)
+	// Use standardized response for successful creation
+	response := responses.NewGinResponse(c, http.StatusCreated, "SuperUser created successfully", createdSuperUser, nil)
+	c.JSON(http.StatusCreated, response)
 }
 
-// Get SuperUser by ID
+// GetAllSuperUsersHandler retrieves all SuperUsers and returns them in a standardized response
+func (h *SuperUserGinHandler) GetAllSuperUsersHandler(c *gin.Context) {
+	superUsers, err := h.service.GetAllSuperUsers(c.Request.Context())
+	if err != nil {
+		// Use standardized response for internal server errors
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to retrieve SuperUsers", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	// If no SuperUsers are found, return a standardized response for empty result
+	if len(superUsers) == 0 {
+		response := responses.NewGinResponse(c, http.StatusNotFound, "No SuperUsers found", nil, nil)
+		c.JSON(http.StatusNotFound, response)
+		return
+	}
+
+	// Use standardized response for successful retrieval
+	response := responses.NewGinResponse(c, http.StatusOK, "SuperUsers retrieved successfully", superUsers, nil)
+	c.JSON(http.StatusOK, response)
+}
+
+// Get SuperUser by ID handler
 func (h *SuperUserGinHandler) GetSuperUserByIDHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		// Use standardized response for invalid ID format
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid ID format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	superUser, err := h.service.GetSuperUserByID(c.Request.Context(), id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		// Use standardized response for not found error
+		response := responses.NewGinResponse(c, http.StatusNotFound, "SuperUser not found", nil, err.Error())
+		c.JSON(http.StatusNotFound, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, superUser)
+	// Use standardized response for successful retrieval
+	response := responses.NewGinResponse(c, http.StatusOK, "SuperUser retrieved successfully", superUser, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Get SuperUser by email
@@ -59,11 +94,13 @@ func (h *SuperUserGinHandler) GetSuperUserByEmailHandler(c *gin.Context) {
 
 	superUser, err := h.service.GetSuperUserByEmail(c.Request.Context(), email)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusNotFound, "SuperUser not found", nil, err.Error())
+		c.JSON(http.StatusNotFound, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, superUser)
+	response := responses.NewGinResponse(c, http.StatusOK, "SuperUser retrieved successfully", superUser, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Get SuperUser by username
@@ -72,11 +109,13 @@ func (h *SuperUserGinHandler) GetSuperUserByUsernameHandler(c *gin.Context) {
 
 	superUser, err := h.service.GetSuperUserByUsername(c.Request.Context(), username)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusNotFound, "SuperUser not found", nil, err.Error())
+		c.JSON(http.StatusNotFound, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, superUser)
+	response := responses.NewGinResponse(c, http.StatusOK, "SuperUser retrieved successfully", superUser, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Enable 2FA for SuperUser
@@ -84,7 +123,8 @@ func (h *SuperUserGinHandler) Enable2FAForSuperUserHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid ID format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
@@ -92,16 +132,19 @@ func (h *SuperUserGinHandler) Enable2FAForSuperUserHandler(c *gin.Context) {
 		Secret string `json:"secret"`
 	}
 	if err := c.ShouldBindJSON(&body); err != nil || body.Secret == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid input", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	if err := h.service.Enable2FAForSuperUser(c.Request.Context(), id, body.Secret); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to enable 2FA", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "2FA enabled"})
+	response := responses.NewGinResponse(c, http.StatusOK, "2FA enabled", nil, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Disable 2FA for SuperUser
@@ -109,27 +152,32 @@ func (h *SuperUserGinHandler) Disable2FAForSuperUserHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid ID format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	if err := h.service.Disable2FAForSuperUser(c.Request.Context(), id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to disable 2FA", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "2FA disabled"})
+	response := responses.NewGinResponse(c, http.StatusOK, "2FA disabled", nil, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Get all 2FA-enabled SuperUsers
 func (h *SuperUserGinHandler) GetAll2FAEnabledSuperUsersHandler(c *gin.Context) {
 	superUsers, err := h.service.GetAll2FAEnabledSuperUsers(c.Request.Context())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to retrieve SuperUsers", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, superUsers)
+	response := responses.NewGinResponse(c, http.StatusOK, "SuperUsers retrieved successfully", superUsers, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Update SuperUser role
@@ -137,7 +185,8 @@ func (h *SuperUserGinHandler) UpdateSuperUserRoleHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid ID format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
@@ -145,16 +194,19 @@ func (h *SuperUserGinHandler) UpdateSuperUserRoleHandler(c *gin.Context) {
 		Role string `json:"role"`
 	}
 	if err := c.ShouldBindJSON(&body); err != nil || body.Role == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid input", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	if err := h.service.UpdateSuperUserRole(c.Request.Context(), id, body.Role); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to update role", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Role updated"})
+	response := responses.NewGinResponse(c, http.StatusOK, "Role updated", nil, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Update SuperUser permissions
@@ -162,7 +214,8 @@ func (h *SuperUserGinHandler) UpdateSuperUserPermissionsHandler(c *gin.Context) 
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid ID format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
@@ -170,16 +223,19 @@ func (h *SuperUserGinHandler) UpdateSuperUserPermissionsHandler(c *gin.Context) 
 		Permissions []string `json:"permissions"`
 	}
 	if err := c.ShouldBindJSON(&body); err != nil || len(body.Permissions) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid input", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	if err := h.service.UpdateSuperUserPermissions(c.Request.Context(), id, body.Permissions); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to update permissions", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Permissions updated"})
+	response := responses.NewGinResponse(c, http.StatusOK, "Permissions updated", nil, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Update specific SuperUser field
@@ -187,23 +243,27 @@ func (h *SuperUserGinHandler) UpdateSuperUserFieldHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid ID format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	field := c.Param("field")
 	var value interface{}
 	if err := c.ShouldBindJSON(&value); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid input", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	if err := h.service.UpdateSuperUserField(c.Request.Context(), id, field, value); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to update field", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Field updated"})
+	response := responses.NewGinResponse(c, http.StatusOK, "Field updated", nil, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Generate and set reset token
@@ -211,17 +271,20 @@ func (h *SuperUserGinHandler) GenerateAndSetResetTokenHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid ID format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	token, err := h.service.GenerateAndSetResetToken(c.Request.Context(), id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to generate reset token", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"reset_token": token})
+	response := responses.NewGinResponse(c, http.StatusOK, "Reset token generated", gin.H{"reset_token": token}, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Clear reset token
@@ -229,16 +292,19 @@ func (h *SuperUserGinHandler) ClearResetTokenHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid ID format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	if err := h.service.ClearResetToken(c.Request.Context(), id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to clear reset token", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Reset token cleared"})
+	response := responses.NewGinResponse(c, http.StatusOK, "Reset token cleared", nil, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Delete SuperUser
@@ -246,16 +312,19 @@ func (h *SuperUserGinHandler) DeleteSuperUserByIDHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		response := responses.NewGinResponse(c, http.StatusBadRequest, "Invalid ID format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	if err := h.service.DeleteSuperUserByID(c.Request.Context(), id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to delete SuperUser", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "SuperUser deleted"})
+	response := responses.NewGinResponse(c, http.StatusOK, "SuperUser deleted successfully", nil, nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // Search SuperUsers
@@ -267,9 +336,11 @@ func (h *SuperUserGinHandler) SearchSuperUsersHandler(c *gin.Context) {
 
 	superUsers, err := h.service.SearchSuperUsers(c.Request.Context(), searchQuery, page, limit, sortBy)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response := responses.NewGinResponse(c, http.StatusInternalServerError, "Failed to search SuperUsers", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, superUsers)
+	response := responses.NewGinResponse(c, http.StatusOK, "SuperUsers retrieved successfully", superUsers, nil)
+	c.JSON(http.StatusOK, response)
 }

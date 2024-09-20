@@ -7,6 +7,7 @@ import (
 
 func SetupSuperUserGinRoutes(r *gin.Engine, handler *handlers.SuperUserGinHandler) {
 	r.POST("/superusers", handler.CreateSuperUserHandler)
+	r.GET("/superusers", handler.GetAllSuperUsersHandler)
 	r.GET("/superusers/:id", handler.GetSuperUserByIDHandler)
 	r.GET("/superusers/email/:email", handler.GetSuperUserByEmailHandler)
 	r.GET("/superusers/username/:username", handler.GetSuperUserByUsernameHandler)

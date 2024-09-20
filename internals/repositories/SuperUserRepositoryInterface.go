@@ -30,4 +30,7 @@ type SuperUserRepositoryInterface interface {
 	// Specific field updates
 	UpdateResetToken(ctx context.Context, id uuid.UUID, token string) error
 	UpdateSuperuserRole(ctx context.Context, id uuid.UUID, role string) error
+
+	// Get all SuperUsers
+	GetAllSuperUsers(ctx context.Context) ([]*types.SuperUserType, error)
 }

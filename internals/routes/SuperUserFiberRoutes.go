@@ -7,6 +7,7 @@ import (
 
 func SetupSuperUserFiberRoutes(app *fiber.App, handler *handlers.SuperUserFiberHandler) {
 	app.Post("/superusers", handler.CreateSuperUserHandler)
+	app.Get("/superusers", handler.GetAllSuperUsersHandler)
 	app.Get("/superusers/:id", handler.GetSuperUserByIDHandler)
 	app.Get("/superusers/email/:email", handler.GetSuperUserByEmailHandler)
 	app.Get("/superusers/username/:username", handler.GetSuperUserByUsernameHandler)

@@ -195,6 +195,24 @@ func (r *inMemorySuperUserRepository) UpdateSuperuserRole(ctx context.Context, i
 	return r.UpdateField(ctx, id, "role", role)
 }
 
+// GetAllSuperUsers retrieves all super users from the in-memory store
+func (r *inMemorySuperUserRepository) GetAllSuperUsers(ctx context.Context) ([]*types.SuperUserType, error) {
+	r.mu.RLock() // Use read lock for concurrent access
+	defer r.mu.RUnlock()
+
+	// Create a slice to store all super users
+	var allSuperUsers []*types.SuperUserType
+	for _, superUser := range r.superUsers {
+		allSuperUsers = append(allSuperUsers, superUser)
+	}
+
+	if len(allSuperUsers) == 0 {
+		return nil, errors.New("no super users found")
+	}
+
+	return allSuperUsers, nil
+}
+
 // Helper function to match the search query
 func matchesQuery(superUser *types.SuperUserType, query string) bool {
 	return superUserContainsIgnoreCase(superUser.FullName, query) ||

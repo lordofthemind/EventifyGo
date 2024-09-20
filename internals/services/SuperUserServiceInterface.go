@@ -40,4 +40,6 @@ type SuperUserServiceInterface interface {
 
 	// Search SuperUsers with pagination and sorting
 	SearchSuperUsers(ctx context.Context, searchQuery string, page, limit int, sortBy string) ([]*types.SuperUserType, error)
+
+	GetAllSuperUsers(ctx context.Context) ([]*types.SuperUserType, error)
 }
