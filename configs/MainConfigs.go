@@ -28,6 +28,7 @@ func MainConfiguration(configFile string) error {
 
 	PostgresURL = viper.GetString("postgres_url")
 	MongoDbURI = viper.GetString("mongodb_uri")
+	Database = viper.GetString("database_type")
 
 	log.Println("Main Configuration Done!!")
 

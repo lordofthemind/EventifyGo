@@ -44,5 +44,7 @@ func DatabaseInitializer() {
 
 		// Set global MongoDB and MongoClient
 		configs.MongoClient = mongoClient
+		configs.MongoDB = gophermongo.GetDatabase(mongoClient, "superuser")
+
 	}
 }
