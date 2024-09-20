@@ -5,7 +5,12 @@ import (
 	"log"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/lordofthemind/EventifyGo/configs"
+	"github.com/lordofthemind/EventifyGo/internals/handlers"
+	"github.com/lordofthemind/EventifyGo/internals/repositories/mongodb"
+	"github.com/lordofthemind/EventifyGo/internals/routes"
+	"github.com/lordofthemind/EventifyGo/internals/services"
 	"github.com/lordofthemind/EventifyGo/internals/types"
 	"github.com/lordofthemind/mygopher/gophermongo"
 	"github.com/lordofthemind/mygopher/gopherpostgres"
@@ -48,5 +53,21 @@ func GinServer() {
 	}
 	defer mongoClient.Disconnect(ctx)
 
-	_ = gophermongo.GetDatabase(mongoClient, "superuser")
+	mongoDB := gophermongo.GetDatabase(mongoClient, "superuser")
+
+	superUserRepository := mongodb.NewMongoSuperUserRepository(mongoDB)
+
+	superUserService := services.NewSuperUserService(superUserRepository)
+
+	superUserHandler := handlers.NewSuperUserGinHandler(superUserService)
+	router := gin.Default()
+
+	routes.SetupSuperUserGinRoutes(router, superUserHandler)
+
+	// 10. Start the Gin Server
+	serverAddress := ":9090" // You can make this configurable if needed
+	if err := router.Run(serverAddress); err != nil {
+		log.Fatalf("Failed to start Gin server: %v", err)
+	}
+
 }

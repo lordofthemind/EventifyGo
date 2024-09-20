@@ -5,7 +5,7 @@ import (
 	"github.com/lordofthemind/EventifyGo/internals/handlers"
 )
 
-func SetupSuperUserGinRoutes(r *gin.Engine, handler handlers.SuperUserGinHandler) {
+func SetupSuperUserGinRoutes(r *gin.Engine, handler *handlers.SuperUserGinHandler) {
 	r.POST("/superusers", handler.CreateSuperUserHandler)
 	r.GET("/superusers/:id", handler.GetSuperUserByIDHandler)
 	r.GET("/superusers/email/:email", handler.GetSuperUserByEmailHandler)

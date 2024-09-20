@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/lordofthemind/EventifyGo/internals/repositories"
@@ -27,6 +28,8 @@ func (r *inMemoryEventRepository) CreateEvent(ctx context.Context, event *types.
 	defer r.mu.Unlock()
 
 	event.EventID = uuid.New() // Assign a new UUID
+	event.CreatedAt = time.Now()
+	event.UpdatedAt = time.Now()
 	r.events[event.EventID] = event
 	return nil
 }
@@ -50,6 +53,7 @@ func (r *inMemoryEventRepository) UpdateEvent(ctx context.Context, event *types.
 		return errors.New("event not found")
 	}
 
+	event.UpdatedAt = time.Now()
 	r.events[event.EventID] = event
 	return nil
 }

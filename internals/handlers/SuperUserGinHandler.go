@@ -11,10 +11,10 @@ import (
 )
 
 type SuperUserGinHandler struct {
-	service services.SuperUserService
+	service services.SuperUserServiceInterface
 }
 
-func NewSuperUserGinHandler(service services.SuperUserService) *SuperUserGinHandler {
+func NewSuperUserGinHandler(service services.SuperUserServiceInterface) *SuperUserGinHandler {
 	return &SuperUserGinHandler{service: service}
 }
 
