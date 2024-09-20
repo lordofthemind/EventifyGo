@@ -4,8 +4,11 @@
 ├── Readme.md
 ├── bin
 ├── cmd
+│   └── DataSeeder.go
 ├── config.yaml
 ├── configs
+│   ├── MainConfigs.go
+│   └── SeederConfigs.go
 ├── docker
 ├── docs
 ├── examples
@@ -16,9 +19,12 @@
 ├── internals
 │   ├── handlers
 │   │   ├── SuperUserFiberHandler.go
-│   │   └── SuperUserGinHandler.go
+│   │   ├── SuperUserGinHandler.go
+│   │   └── SuperUserRevelHandler.go
 │   ├── initializers
 │   ├── repositories
+│   │   ├── EventMongoRepository.go
+│   │   ├── EventRepositoryInterface.go
 │   │   ├── SuperUserInMemoryRepository.go
 │   │   ├── SuperUserMongoRepository.go
 │   │   ├── SuperUserPostgresRepository.go
@@ -28,18 +34,27 @@
 │   │   ├── SuperUserFiberRoutes.go
 │   │   └── SuperUserGinRoutes.go
 │   ├── services
-│   │   └── SuperUserService.go
+│   │   ├── SuperUserService.go
+│   │   └── SuperUserServiceInterface.go
 │   ├── types
+│   │   ├── EventType.go
 │   │   └── SuperUserType.go
 │   └── utils
 ├── logs
+│   ├── 20240919_182902_Seeder.log
+│   ├── 20240919_184347_Seeder.log
+│   ├── 20240919_184819_Seeder.log
+│   ├── 20240919_185023_Seeder.log
+│   ├── 20240919_185516_Seeder.log
+│   └── 20240919_185858_Seeder.log
 ├── main.go
 ├── pkgs
 │   ├── helpers
+│   │   └── CheckAndEnableUUIDExtension.go
 │   ├── middlewares
 │   └── tokens
 ├── scripts
 ├── ssl
 └── tree.txt
 
-23 directories, 20 files
+23 directories, 35 files
