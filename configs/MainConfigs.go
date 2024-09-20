@@ -5,11 +5,17 @@ import (
 	"log"
 
 	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/mongo"
+	"gorm.io/gorm"
 )
 
 var (
 	PostgresURL string
 	MongoDbURI  string
+	GormDB      *gorm.DB
+	MongoDB     *mongo.Database
+	MongoClient *mongo.Client
+	Database    string
 )
 
 func MainConfiguration(configFile string) error {
