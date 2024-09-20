@@ -197,12 +197,12 @@ func (r *inMemorySuperUserRepository) UpdateSuperuserRole(ctx context.Context, i
 
 // Helper function to match the search query
 func matchesQuery(superUser *types.SuperUserType, query string) bool {
-	return containsIgnoreCase(superUser.FullName, query) ||
-		containsIgnoreCase(superUser.Email, query) ||
-		containsIgnoreCase(superUser.Username, query)
+	return superUserContainsIgnoreCase(superUser.FullName, query) ||
+		superUserContainsIgnoreCase(superUser.Email, query) ||
+		superUserContainsIgnoreCase(superUser.Username, query)
 }
 
 // Helper function to do a case-insensitive contains check
-func containsIgnoreCase(s, substr string) bool {
+func superUserContainsIgnoreCase(s, substr string) bool {
 	return len(s) >= len(substr) && (s[:len(substr)] == substr || s[len(s)-len(substr):] == substr)
 }
