@@ -11,10 +11,10 @@ import (
 )
 
 type SuperUserFiberHandler struct {
-	service services.SuperUserService
+	service services.SuperUserServiceInterface
 }
 
-func NewSuperUserFiberHandler(service services.SuperUserService) *SuperUserFiberHandler {
+func NewSuperUserFiberHandler(service services.SuperUserServiceInterface) *SuperUserFiberHandler {
 	return &SuperUserFiberHandler{service: service}
 }
 

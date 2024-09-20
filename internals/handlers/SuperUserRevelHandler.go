@@ -11,10 +11,10 @@ import (
 
 type SuperUserRevelController struct {
 	*revel.Controller
-	service services.SuperUserService
+	service services.SuperUserServiceInterface
 }
 
-func (c *SuperUserRevelController) Init(service services.SuperUserService) *SuperUserRevelController {
+func (c *SuperUserRevelController) Init(service services.SuperUserServiceInterface) *SuperUserRevelController {
 	return &SuperUserRevelController{service: service}
 }
 

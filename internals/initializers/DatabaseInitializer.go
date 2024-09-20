@@ -36,15 +36,13 @@ func DatabaseInitializer() {
 	}
 
 	if configs.Database == "mongodb" {
-		// Initialize MongoDB
+		// Initialize MongoDB client
 		mongoClient, err := gophermongo.ConnectToMongoDB(ctx, configs.MongoDbURI, 10*time.Second, 3)
 		if err != nil {
 			log.Fatalf("Failed to connect to MongoDB: %v", err)
 		}
 
-		// Set global MongoDB and MongoClient
+		// Set global MongoClient
 		configs.MongoClient = mongoClient
-		configs.MongoDB = gophermongo.GetDatabase(mongoClient, "superuser")
-
 	}
 }

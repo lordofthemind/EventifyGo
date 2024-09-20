@@ -5,7 +5,9 @@
 ├── bin
 ├── cmd
 │   ├── DataSeeder.go
-│   └── GinServer.go
+│   ├── FiberServer.go
+│   ├── GinServer.go
+│   └── RevelServer.go
 ├── config.yaml
 ├── configs
 │   ├── MainConfigs.go
@@ -23,20 +25,24 @@
 │   │   ├── SuperUserGinHandler.go
 │   │   └── SuperUserRevelHandler.go
 │   ├── initializers
+│   │   └── DatabaseInitializer.go
 │   ├── repositories
 │   │   ├── EventRepositoryInterface.go
 │   │   ├── SuperUserRepositoryInterface.go
 │   │   ├── inmemorydb
+│   │   │   ├── EventInMemoryDbRepository.go
 │   │   │   └── SuperUserInMemoryRepository.go
 │   │   ├── mongodb
 │   │   │   ├── EventMongoRepository.go
 │   │   │   └── SuperUserMongoRepository.go
 │   │   └── postgresdb
+│   │       ├── EventPostgresRepository.go
 │   │       └── SuperUserPostgresRepository.go
 │   ├── responses
 │   ├── routes
 │   │   ├── SuperUserFiberRoutes.go
-│   │   └── SuperUserGinRoutes.go
+│   │   ├── SuperUserGinRoutes.go
+│   │   └── SuperUserRevelRoutes.go
 │   ├── services
 │   │   ├── SuperUserService.go
 │   │   └── SuperUserServiceInterface.go
@@ -44,6 +50,14 @@
 │   │   ├── EventType.go
 │   │   └── SuperUserType.go
 │   └── utils
+├── logs
+│   ├── 20240920_100720_ginServer.log
+│   ├── 20240920_102838_ginServer.log
+│   ├── 20240920_102948_ginServer.log
+│   ├── 20240920_103037_ginServer.log
+│   ├── 20240920_103622_ginServer.log
+│   ├── 20240920_104606_fiberServer.log
+│   └── 20240920_104649_fiberServer.log
 ├── main.go
 ├── pkgs
 │   ├── helpers
@@ -53,4 +67,4 @@
 ├── ssl
 └── tree.txt
 
-25 directories, 29 files
+26 directories, 42 files
