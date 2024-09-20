@@ -11,6 +11,7 @@ import (
 	"github.com/lordofthemind/EventifyGo/internals/repositories/mongodb"
 	"github.com/lordofthemind/EventifyGo/internals/routes"
 	"github.com/lordofthemind/EventifyGo/internals/services"
+	"github.com/lordofthemind/EventifyGo/pkgs/middlewares"
 	"github.com/lordofthemind/mygopher/gophermongo"
 	"github.com/lordofthemind/mygopher/mygopherlogger"
 )
@@ -66,6 +67,7 @@ func GinServer() {
 
 	// Set up Gin routes
 	router := gin.Default()
+	router.Use(middlewares.RequestIDGinMiddleware())
 	routes.SetupSuperUserGinRoutes(router, superUserHandler)
 
 	// Start the Gin server
