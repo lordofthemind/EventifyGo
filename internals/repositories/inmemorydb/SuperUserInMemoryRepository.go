@@ -1,4 +1,4 @@
-package repositories
+package inmemorydb
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lordofthemind/EventifyGo/internals/repositories"
 	"github.com/lordofthemind/EventifyGo/internals/types"
 )
 
@@ -16,7 +17,7 @@ type inMemorySuperUserRepository struct {
 }
 
 // NewInMemorySuperUserRepository initializes an in-memory repository
-func NewInMemorySuperUserRepository() SuperUserRepositoryInterface {
+func NewInMemorySuperUserRepository() repositories.SuperUserRepositoryInterface {
 	return &inMemorySuperUserRepository{
 		superUsers: make(map[uuid.UUID]*types.SuperUserType),
 	}

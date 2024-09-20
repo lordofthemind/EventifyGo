@@ -4,7 +4,8 @@
 ├── Readme.md
 ├── bin
 ├── cmd
-│   └── DataSeeder.go
+│   ├── DataSeeder.go
+│   └── GinServer.go
 ├── config.yaml
 ├── configs
 │   ├── MainConfigs.go
@@ -23,12 +24,15 @@
 │   │   └── SuperUserRevelHandler.go
 │   ├── initializers
 │   ├── repositories
-│   │   ├── EventMongoRepository.go
 │   │   ├── EventRepositoryInterface.go
-│   │   ├── SuperUserInMemoryRepository.go
-│   │   ├── SuperUserMongoRepository.go
-│   │   ├── SuperUserPostgresRepository.go
-│   │   └── SuperUserRepositoryInterface.go
+│   │   ├── SuperUserRepositoryInterface.go
+│   │   ├── inmemorydb
+│   │   │   └── SuperUserInMemoryRepository.go
+│   │   ├── mongodb
+│   │   │   ├── EventMongoRepository.go
+│   │   │   └── SuperUserMongoRepository.go
+│   │   └── postgresdb
+│   │       └── SuperUserPostgresRepository.go
 │   ├── responses
 │   ├── routes
 │   │   ├── SuperUserFiberRoutes.go
@@ -40,21 +44,13 @@
 │   │   ├── EventType.go
 │   │   └── SuperUserType.go
 │   └── utils
-├── logs
-│   ├── 20240919_182902_Seeder.log
-│   ├── 20240919_184347_Seeder.log
-│   ├── 20240919_184819_Seeder.log
-│   ├── 20240919_185023_Seeder.log
-│   ├── 20240919_185516_Seeder.log
-│   └── 20240919_185858_Seeder.log
 ├── main.go
 ├── pkgs
 │   ├── helpers
-│   │   └── CheckAndEnableUUIDExtension.go
 │   ├── middlewares
 │   └── tokens
 ├── scripts
 ├── ssl
 └── tree.txt
 
-23 directories, 35 files
+25 directories, 29 files

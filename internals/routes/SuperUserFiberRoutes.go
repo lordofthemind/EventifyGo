@@ -5,7 +5,7 @@ import (
 	"github.com/lordofthemind/EventifyGo/internals/handlers"
 )
 
-func SetupRoutes(app *fiber.App, handler handlers.SuperUserFiberHandler) {
+func SetupSuperUserFiberRoutes(app *fiber.App, handler handlers.SuperUserFiberHandler) {
 	app.Post("/superusers", handler.CreateSuperUserHandler)
 	app.Get("/superusers/:id", handler.GetSuperUserByIDHandler)
 	app.Get("/superusers/email/:email", handler.GetSuperUserByEmailHandler)

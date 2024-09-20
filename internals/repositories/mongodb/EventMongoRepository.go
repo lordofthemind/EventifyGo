@@ -1,4 +1,4 @@
-package repositories
+package mongodb
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/google/uuid"
+	"github.com/lordofthemind/EventifyGo/internals/repositories"
 	"github.com/lordofthemind/EventifyGo/internals/types"
 )
 
@@ -17,7 +18,7 @@ type mongoEventRepository struct {
 }
 
 // NewMongoEventRepository creates a new instance of mongoEventRepository.
-func NewMongoEventRepository(db *mongo.Database) EventRepositoryInterface {
+func NewMongoEventRepository(db *mongo.Database) repositories.EventRepositoryInterface {
 	return &mongoEventRepository{
 		collection: db.Collection("events"),
 	}

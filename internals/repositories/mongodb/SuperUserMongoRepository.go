@@ -1,4 +1,4 @@
-package repositories
+package mongodb
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lordofthemind/EventifyGo/internals/repositories"
 	"github.com/lordofthemind/EventifyGo/internals/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -16,7 +17,7 @@ type mongoSuperUserRepository struct {
 	collection *mongo.Collection
 }
 
-func NewMongoSuperUserRepository(db *mongo.Database) SuperUserRepositoryInterface {
+func NewMongoSuperUserRepository(db *mongo.Database) repositories.SuperUserRepositoryInterface {
 	return &mongoSuperUserRepository{
 		collection: db.Collection("superusers"),
 	}

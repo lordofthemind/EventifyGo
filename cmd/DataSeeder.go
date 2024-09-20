@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -123,7 +123,7 @@ func SeederFactory(dbType string, db interface{}) Seeder {
 	return nil
 }
 
-func main() {
+func DataSeeder() {
 
 	logFile, err := gopherlogger.SetUpLoggerFile("Seeder.log")
 	if err != nil {

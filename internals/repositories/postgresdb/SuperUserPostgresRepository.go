@@ -1,4 +1,4 @@
-package repositories
+package postgresdb
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lordofthemind/EventifyGo/internals/repositories"
 	"github.com/lordofthemind/EventifyGo/internals/types"
 	"gorm.io/gorm"
 )
@@ -14,7 +15,7 @@ type postgresSuperUserRepository struct {
 	db *gorm.DB
 }
 
-func NewPostgresSuperUserRepository(db *gorm.DB) SuperUserRepositoryInterface {
+func NewPostgresSuperUserRepository(db *gorm.DB) repositories.SuperUserRepositoryInterface {
 	return &postgresSuperUserRepository{
 		db: db,
 	}
